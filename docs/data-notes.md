@@ -29,8 +29,24 @@ deleted 2026-08-24 to keep them out of `**/*.shp` globs. Extracted shapefiles
 live under `data/raw/noah/extracted/`.
 
 **OSM facilities** — Overpass bbox (14.30,120.90)–(14.80,121.15), amenities
-school/hospital/clinic, `out center`; thousands of elements. Spillover beyond
-NCR is expected and gets clipped to boundaries in pipeline step 04.
+school/hospital/clinic, `out center`; 3,738 elements (2,669 school / 328
+hospital / 741 clinic). Hospital count feels thin for 13.5M people → OSM
+coverage is partial; methodology labels these "OSM-mapped facilities" and lists
+under-coverage as a limitation. Spillover beyond NCR is expected and gets
+clipped to boundaries in pipeline step 04.
+
+## Schema confirmations (Task 3, 2026-08-24)
+
+| Constant | Value | Evidence |
+|---|---|---|
+| `BGY_FILE` | `BgySubMuns.shp.shp` | rich variant; has `pop_2020` (cross-check), lacks city names |
+| `BGY_PCODE_COL` | `adm4_pcode` | format `PH##########` (PH + new 10-digit PSGC) |
+| `BGY_NAME_COL` | `name` | clean barangay name (`adm4_en` carries "(Pob.)" suffixes) |
+| `CENSUS_PCODE_COL` | `New 10 PCODE` | PH-prefixed — same format as `adm4_pcode`, direct join key |
+| `CENSUS_POP_COL` | `2020 Census Popn` | 41,984 rows nationwide |
+| `CENSUS_CITY_COL` | `Mun_City` | city names come via the census join (boundaries lack them) |
+| `NCR_PCODE_PREFIXES` | `("PH13",)` | NCR = PSGC region 13 |
+| NOAH hazard column | `Var` ∈ {1.0, 2.0, 3.0} | all three shapefiles; CRS `EPSG:4326` |
 
 **Rainfall** — Open-Meteo ERA5 archive, 4 NCR points, daily precipitation
 1940-01-01..2025-12-31 (31,412 days/point). Transient rate-limit on first

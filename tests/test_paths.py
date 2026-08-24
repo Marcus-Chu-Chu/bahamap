@@ -7,6 +7,6 @@ def test_weights_sum_to_one():
 
 def test_constants_shape():
     assert paths.HEADLINE_RP in paths.RETURN_PERIODS
-    assert len(paths.NCR_CITY_TOKENS) == 17
+    assert all(p.startswith("PH") for p in paths.NCR_PCODE_PREFIXES)
     assert len(paths.RAIN_POINTS) == 4
     assert paths.POP_NCR_2020 == 13_484_462
