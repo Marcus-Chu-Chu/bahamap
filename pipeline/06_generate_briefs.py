@@ -1,0 +1,84 @@
+"""Generate bilingual briefs for every barangay via the Message Batches API.
+
+Usage: python pipeline/06_generate_briefs.py [--limit N] [--yes]
+Writes data/raw/briefs_raw.json (unvalidated model output, gitignored path).
+"""
+import argparse
+import json
+import sys
+import time
+from datetime import datetime, timezone
+
+import pandas as pd
+from anthropic import Anthropic
+
+# Allow running as `python pipeline/06_generate_briefs.py` from the repo root:
+# a script's own folder (pipeline/) lands on sys.path, the repo root does not.
+if __package__ in (None, ""):
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from pipeline.grounding import build_payload
+from pipeline.paths import PROCESSED, RAW
+
+MODEL = "claude-haiku-4-5"
+SYSTEM = """You write short public-safety briefs about flood exposure for Metro Manila barangays.
+Rules, non-negotiable:
+- Use ONLY the numbers in the user's JSON, written exactly as given (you may add thousands separators). Never compute, estimate, or invent any number.
+- Plain, calm, non-alarmist language. No specific local claims (no street names, no named evacuation centers) — only generic preparedness advice.
+- ~120 words per language.
+Output STRICTLY a JSON object: {"en": "...", "tl": "..."} with an English brief and a natural (not machine-literal) Tagalog brief. No other text."""
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--limit", type=int, help="only the N highest-exposure barangays")
+    ap.add_argument("--yes", action="store_true")
+    args = ap.parse_args()
+
+    m = pd.read_parquet(PROCESSED / "barangay_master.parquet")
+    rows = m.nsmallest(args.limit, "rank_ncr") if args.limit else m
+    payloads = [build_payload(r, n_bgys=len(m)) for r in rows.to_dict("records")]
+
+    est_cost = len(payloads) * 900 / 1e6 * 5  # ~900 tok/req, rough $5/Mtok blended batch
+    print(f"{len(payloads)} briefs, rough cost ≤ ${est_cost:.2f}")
+    if not args.yes and input("proceed? [y/N] ").lower() != "y":
+        sys.exit("aborted")
+
+    client = Anthropic()
+    reqs = [{"custom_id": p["pcode"],
+             "params": {"model": MODEL, "max_tokens": 700, "temperature": 0.3,
+                        "system": SYSTEM,
+                        "messages": [{"role": "user",
+                                      "content": json.dumps(p, ensure_ascii=False)}]}}
+            for p in payloads]
+    batch = client.messages.batches.create(requests=reqs)
+    print(f"batch {batch.id} submitted; polling...")
+    while True:
+        b = client.messages.batches.retrieve(batch.id)
+        print(f"  {b.processing_status} {dict(b.request_counts)}")
+        if b.processing_status == "ended":
+            break
+        time.sleep(60)
+
+    out = {}
+    for res in client.messages.batches.results(batch.id):
+        if res.result.type != "succeeded":
+            print(f"  {res.custom_id}: {res.result.type}")
+            continue
+        text = res.result.message.content[0].text.strip()
+        text = text.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+        try:
+            parsed = json.loads(text)
+            out[res.custom_id] = {"en": parsed["en"], "tl": parsed["tl"],
+                                  "source": "claude", "model": MODEL,
+                                  "generated_at": datetime.now(timezone.utc).isoformat()}
+        except (json.JSONDecodeError, KeyError):
+            print(f"  {res.custom_id}: unparseable output")
+    (RAW / "briefs_raw.json").write_text(json.dumps(out, ensure_ascii=False, indent=1),
+                                         encoding="utf-8")
+    print(f"wrote {len(out)}/{len(payloads)} raw briefs")
+
+
+if __name__ == "__main__":
+    main()
