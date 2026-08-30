@@ -23,7 +23,8 @@ def find_shp_for_rp(rp: int) -> list:
 
 
 def main() -> None:
-    for rp in RETURN_PERIODS:
+    prev_geom = None  # dissolved M+H of the previous (shorter) return period
+    for rp in RETURN_PERIODS:  # ascending order matters for the nesting union
         shps = find_shp_for_rp(rp)
         print(f"{rp}yr: {len(shps)} shapefile(s): {[s.name for s in shps]}")
         if not shps:  # HF mirror ships ONE merged MetroManila_Flood_{rp}year.shp
@@ -35,6 +36,14 @@ def main() -> None:
             parts.append(hazards.normalize(g))
         merged = gpd.GeoDataFrame(pd.concat(parts, ignore_index=True), crs=parts[0].crs)
         mh = hazards.dissolve_medhigh(merged)
+        if prev_geom is not None:
+            # NOAH's merged per-RP layers are not perfectly nested (the 100-yr
+            # run locally downgrades some 25-yr Medium/High cells — see
+            # docs/data-notes.md). Enforce the physical constraint that a rarer
+            # flood covers at least what a more frequent one does.
+            mh = gpd.GeoDataFrame(geometry=[mh.geometry.iloc[0].union(prev_geom)],
+                                  crs=mh.crs)
+        prev_geom = mh.geometry.iloc[0]
         out = PROCESSED / f"hazard_mh_{rp}yr.parquet"
         mh.to_parquet(out)
         print(f"  wrote {out.name}  area_km2={mh.geometry.iloc[0].area / 1e6:,.1f}")

@@ -77,3 +77,21 @@ match on first run):
   administration; the census sheet still says Makati).
 - **Final:** 1,710 barangays, 100.0% match, population total **13,484,462 —
   exactly** the PSA NCR figure. 17 cities (16 + Pateros).
+
+## Return-period nesting fix (Task 7 QA, 2026-08-30)
+
+The QA monotonicity gate caught 653 barangays whose 25-yr Medium/High area share
+exceeded their 100-yr share (deltas up to 94pp, 85% of them in the City of
+Manila). Diagnosis on the raw layers: the merged 100-yr product (the
+oddly-named `Metro Manila.zip`, see acquisition notes) has MORE total and
+Medium/High area metro-wide than the 25-yr layer, but locally classifies some
+25-yr Medium/High cells as Low — it is a different model run, not perfectly
+nested with the 5/25-yr layers. 5-yr vs 25-yr is perfectly nested (0
+violations).
+
+Fix in `02_normalize_hazards.py`: each return period's dissolved Medium/High
+geometry is unioned with all shorter return periods' (25 := 25∪5,
+100 := 100∪25∪5), enforcing the physical definition that a rarer flood covers
+at least what a more frequent one does. The 5-yr layer is untouched; the 25-yr
+layer is unchanged by construction (already nested); only the 100-yr layer
+grows. Documented as a methodology note in the app.
