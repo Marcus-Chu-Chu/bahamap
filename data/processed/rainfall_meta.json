@@ -1,0 +1,25 @@
+{
+  "trends": {
+    "max_daily_mm": {
+      "slope_per_decade": 2.226,
+      "p_value": 0.19127
+    },
+    "days_ge_50": {
+      "slope_per_decade": 0.056,
+      "p_value": 0.54808
+    },
+    "days_ge_100": {
+      "slope_per_decade": 0.069,
+      "p_value": 0.04728
+    }
+  },
+  "events": {
+    "Ondoy": "2009-09-26",
+    "Carina (habagat)": "2024-07-24"
+  },
+  "event_daily_mm": {
+    "Ondoy": 134.2,
+    "Carina (habagat)": 44.9
+  },
+  "note": "ERA5 reanalysis (~31km grid) smooths point extremes; values are area-averaged and used for trends, not absolute records."
+}
