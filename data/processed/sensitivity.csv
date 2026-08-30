@@ -1,0 +1,7 @@
+shift,spearman_rank_corr
+pop+10pp,0.9965
+pop-10pp,0.9976
+area+10pp,0.9966
+area-10pp,0.9925
+infra+10pp,0.9992
+infra-10pp,0.9992

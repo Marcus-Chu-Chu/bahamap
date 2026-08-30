@@ -43,3 +43,29 @@ def test_points_in_per_bgy():
 def test_count_points_in_hazard():
     pts = gpd.GeoDataFrame(geometry=[Point(10, 10), Point(80, 80)], crs=CRS)
     assert scoring.count_points_in(pts, _hazard()) == 1
+
+
+def test_minmax_handles_constant_series():
+    s = pd.Series([5.0, 5.0, 5.0])
+    assert scoring.minmax(s).tolist() == [0.0, 0.0, 0.0]
+
+
+def test_exposure_score_weighting():
+    df = pd.DataFrame({
+        "est_pop_exposed": [0, 100],
+        "pct_area_mh": [0.0, 1.0],
+        "infra_exposed": [0, 10],
+    })
+    s = scoring.exposure_score(df, {"pop": 0.5, "area": 0.3, "infra": 0.2})
+    assert s.tolist() == [0.0, 100.0]
+
+
+def test_sensitivity_returns_high_corr_for_stable_ranking():
+    df = pd.DataFrame({
+        "est_pop_exposed": range(50),
+        "pct_area_mh": [x / 50 for x in range(50)],
+        "infra_exposed": range(50),
+    })
+    out = scoring.sensitivity(df, {"pop": 0.5, "area": 0.3, "infra": 0.2})
+    assert (out["spearman_rank_corr"] > 0.99).all()
+    assert len(out) == 6  # ±10pp on each of three weights
