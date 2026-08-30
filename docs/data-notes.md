@@ -51,3 +51,29 @@ clipped to boundaries in pipeline step 04.
 **Rainfall** — Open-Meteo ERA5 archive, 4 NCR points, daily precipitation
 1940-01-01..2025-12-31 (31,412 days/point). Transient rate-limit on first
 back-to-back fetch; idempotent re-run completed it.
+
+## Census join reconciliation (Task 5, 2026-08-30)
+
+The Task-3 schema confirmation read the head of the boundary file — region 01
+rows. NCR rows broke three of its conclusions, caught by the join gate (0/1,712
+match on first run):
+
+- **The rich variant is OLD-PSGC vintage.** Its `adm4_pcode`/`psgc_code`
+  (e.g. `PH1303901001`) have **zero** overlap with the census's new 10-digit
+  codes, and its `name`/`adm4_en` are null for every NCR row. The table below is
+  superseded: we now join on the **lean variant** `PH_Adm4_BgySubMuns.shp.shp`,
+  whose `adm4_psgc` is the new 10-digit PSGC stored as int64 (leading zero
+  stripped outside NCR — restored via `"PH" + zfill(10)`), names in `adm4_en`,
+  CRS already EPSG:32651.
+- **14 `geo_level="SubMun"` rows dropped** (Manila's sub-municipal aggregates,
+  pcodes ending `000`; their component barangays are present individually),
+  plus 2 junk rows carrying old codes and null attributes.
+- **The 10 EMBO barangays (336,873 residents) straddle vintages**: the 2020
+  census codes them under Makati (`PH13803000xx`) while the boundary file uses
+  their post-Supreme-Court-transfer Taguig pcodes (`PH13815000xx`). Without a
+  fix they fall out of the join — 2.5% of NCR, more than the ±1% gate allows.
+  `PCODE_FIXES` in `paths.py` remaps census→boundary code per barangay
+  (name-verified one-to-one); their `city` is set to "City of Taguig" (current
+  administration; the census sheet still says Makati).
+- **Final:** 1,710 barangays, 100.0% match, population total **13,484,462 —
+  exactly** the PSA NCR figure. 17 cities (16 + Pateros).
