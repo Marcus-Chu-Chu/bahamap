@@ -65,7 +65,7 @@ python -m venv .venv
 .venv/Scripts/python pipeline/05_rainfall.py
 .venv/Scripts/python notebooks/qa.py                      # acceptance checks
 .venv/Scripts/python -m streamlit run app/Home.py
-# optional, needs ANTHROPIC_API_KEY:
+# optional, needs an Anthropic API key in .env (see .env.example):
 .venv/Scripts/python pipeline/06_generate_briefs.py --limit 5
 .venv/Scripts/python pipeline/07_validate_briefs.py
 ```

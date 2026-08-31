@@ -5,6 +5,7 @@ Writes data/raw/briefs_raw.json (unvalidated model output, gitignored path).
 """
 import argparse
 import json
+import os
 import sys
 import time
 from datetime import datetime, timezone
@@ -19,7 +20,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from pipeline.grounding import build_payload
-from pipeline.paths import PROCESSED, RAW
+from pipeline.paths import PROCESSED, RAW, ROOT
 
 MODEL = "claude-haiku-4-5"
 SYSTEM = """You write short public-safety briefs about flood exposure for Metro Manila barangays.
@@ -28,6 +29,16 @@ Rules, non-negotiable:
 - Plain, calm, non-alarmist language. No specific local claims (no street names, no named evacuation centers) — only generic preparedness advice.
 - ~120 words per language.
 Output STRICTLY a JSON object: {"en": "...", "tl": "..."} with an English brief and a natural (not machine-literal) Tagalog brief. No other text."""
+
+
+def load_env_key() -> None:
+    """Populate ANTHROPIC_API_KEY from the gitignored repo-root .env, unless already set."""
+    if "ANTHROPIC_API_KEY" in os.environ or not (ROOT / ".env").exists():
+        return
+    for line in (ROOT / ".env").read_text(encoding="utf-8").splitlines():
+        key, _, val = line.partition("=")
+        if key.strip() == "ANTHROPIC_API_KEY":
+            os.environ["ANTHROPIC_API_KEY"] = val.strip().strip("'\"")
 
 
 def main() -> None:
@@ -44,6 +55,11 @@ def main() -> None:
     print(f"{len(payloads)} briefs, rough cost ≤ ${est_cost:.2f}")
     if not args.yes and input("proceed? [y/N] ").lower() != "y":
         sys.exit("aborted")
+
+    load_env_key()
+    if not os.environ.get("ANTHROPIC_API_KEY", "").startswith("sk-ant-") or \
+            os.environ.get("ANTHROPIC_API_KEY") == "sk-ant-your-key-here":
+        sys.exit("no API key: paste yours into .env (see .env.example) or set ANTHROPIC_API_KEY")
 
     client = Anthropic()
     reqs = [{"custom_id": p["pcode"],
