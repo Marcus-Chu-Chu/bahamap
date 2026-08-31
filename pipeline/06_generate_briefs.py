@@ -32,13 +32,16 @@ Output STRICTLY a JSON object: {"en": "...", "tl": "..."} with an English brief 
 
 
 def load_env_key() -> None:
-    """Populate ANTHROPIC_API_KEY from the gitignored repo-root .env, unless already set."""
-    if "ANTHROPIC_API_KEY" in os.environ or not (ROOT / ".env").exists():
+    """Populate ANTHROPIC_API_KEY / ANTHROPIC_WORKSPACE_ID from the gitignored
+    repo-root .env, unless already set. The workspace id is required by the API
+    when the key is identity-linked (the Console's newer key type)."""
+    if not (ROOT / ".env").exists():
         return
     for line in (ROOT / ".env").read_text(encoding="utf-8").splitlines():
         key, _, val = line.partition("=")
-        if key.strip() == "ANTHROPIC_API_KEY":
-            os.environ["ANTHROPIC_API_KEY"] = val.strip().strip("'\"")
+        key = key.strip()
+        if key in ("ANTHROPIC_API_KEY", "ANTHROPIC_WORKSPACE_ID") and key not in os.environ:
+            os.environ[key] = val.strip().strip("'\"")
 
 
 def main() -> None:
@@ -61,7 +64,8 @@ def main() -> None:
             os.environ.get("ANTHROPIC_API_KEY") == "sk-ant-your-key-here":
         sys.exit("no API key: paste yours into .env (see .env.example) or set ANTHROPIC_API_KEY")
 
-    client = Anthropic()
+    wid = os.environ.get("ANTHROPIC_WORKSPACE_ID")
+    client = Anthropic(default_headers={"anthropic-workspace-id": wid} if wid else None)
     reqs = [{"custom_id": p["pcode"],
              "params": {"model": MODEL, "max_tokens": 700, "temperature": 0.3,
                         "system": SYSTEM,
