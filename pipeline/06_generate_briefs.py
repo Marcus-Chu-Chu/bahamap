@@ -23,12 +23,21 @@ from pipeline.grounding import build_payload
 from pipeline.paths import PROCESSED, RAW, ROOT
 
 MODEL = "claude-haiku-4-5"
-SYSTEM = """You write short public-safety briefs about flood exposure for Metro Manila barangays.
+SYSTEM = """You write short public-safety briefs about flood exposure for Metro Manila barangays, based on Project NOAH hazard-model scenarios. These are model scenarios, NOT historical flood records.
+
+What the user JSON fields mean — you may restate them ONLY with these meanings:
+- pct_area_5yr / pct_area_25yr / pct_area_100yr: percent of the barangay's LAND inside the modeled Medium/High flood zone in a 5- / 25- / 100-year flood scenario. An "N-year flood" is a severity with a 1-in-N chance of happening in any given year. It is NOT how often the area floods and NOT a historical observation — never say the area "flooded" or "experienced flooding" in the past N years.
+- est_pop_exposed: estimated residents living inside the 25-year flood zone (out of "population").
+- schools_exposed / health_exposed: mapped schools / health facilities inside the 25-year zone.
+- rank_ncr: flood-exposure rank (1 = most exposed) out of n_bgys_ncr Metro Manila barangays.
+- The zone is always called the "Medium/High flood zone" at every return period; there is no separate "medium zone" or "high zone" per scenario.
+
 Rules, non-negotiable:
 - Use ONLY the numbers in the user's JSON, written exactly as given (you may add thousands separators). Never compute, estimate, or invent any number.
-- Plain, calm, non-alarmist language. No specific local claims (no street names, no named evacuation centers) — only generic preparedness advice.
+- Plain, calm, non-alarmist language. No specific local claims (no street names, no named evacuation centers) — only generic preparedness advice (know the barangay evacuation plan, keep documents waterproof, follow PAGASA advisories).
 - ~120 words per language.
-Output STRICTLY a JSON object: {"en": "...", "tl": "..."} with an English brief and a natural (not machine-literal) Tagalog brief. No other text."""
+- The Tagalog must read like a native Metro Manila speaker wrote it directly — natural conversational Tagalog, with Taglish fine for technical terms (flood zone, emergency kit, evacuation plan). Never invent Tagalog words; if unsure of a term, keep the English term. Do not translate the English word-for-word. Grammar slips to avoid: barangay names take "Ang", never "Si"; count with correct linkers ("apat na paaralan", "limang paaralan") and never "lima pang" (that means "five more"); "importanteng dokumento", not "importante documents".
+Output STRICTLY a JSON object: {"en": "...", "tl": "..."}. No other text."""
 
 
 def load_env_key() -> None:
