@@ -4,16 +4,16 @@ import streamlit as st
 from data_io import load_briefs, load_geojson, load_master
 
 st.set_page_config(page_title="BahaMap", page_icon="🌊", layout="wide")
-st.title("🌊 BahaMap — Metro Manila Flood Exposure Atlas")
+st.title("BahaMap: Metro Manila Flood Exposure Atlas")
 st.caption("Who lives in harm's way when the floods come? "
-           "Educational project — not official hazard guidance. See Methodology.")
+           "Educational project, not official hazard guidance. See Methodology.")
 
 m = load_master()
 gj = load_geojson()
 briefs = load_briefs()
 
 METRICS = {
-    "Exposure score (0–100)": "score",
+    "Exposure score (0-100)": "score",
     "% of area in 25-yr flood zone": "pct_area_mh_25",
     "Est. residents exposed (25-yr)": "est_pop_exposed_25",
     "% of area in 5-yr flood zone": "pct_area_mh_5",
@@ -42,7 +42,7 @@ if event and event.selection and event.selection.points:
 
 with right:
     options = view.sort_values("name")
-    labels = options["name"] + " — " + options["city"]
+    labels = options["name"] + ", " + options["city"]
     idx = int(options.reset_index().index[options["pcode"] == sel][0]) if sel in set(options["pcode"]) else 0
     pick = st.selectbox("Barangay (or click the map)", labels, index=idx)
     row = options.iloc[list(labels).index(pick)]
@@ -60,7 +60,7 @@ with right:
     st.write(f"**Facilities in flood zone:** {row['schools_exposed']} of "
              f"{row['schools_total']} schools · {row['health_exposed']} of "
              f"{row['health_total']} health facilities *(OSM-mapped)*")
-    st.write(f"Score components — population {row['pop_norm']:.2f} · "
+    st.write(f"Score components: population {row['pop_norm']:.2f} · "
              f"area {row['area_norm']:.2f} · infrastructure {row['infra_norm']:.2f} "
              f"(weights 0.5/0.3/0.2)")
 
