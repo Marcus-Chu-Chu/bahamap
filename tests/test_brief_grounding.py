@@ -33,6 +33,17 @@ def test_validate_catches_hallucinated_number():
     assert grounding.validate(bad, p) == [99999.0]
 
 
+def test_validate_allows_numbers_from_name_and_city():
+    # Manila's barangays are literally named "Barangay 693" etc.; the brief
+    # must be allowed to say its own name.
+    row = dict(ROW, name="Barangay 693", city="City of Manila")
+    p = grounding.build_payload(row, 1700)
+    ok = "Barangay 693, City of Manila: 87% of land is in the 25-year zone."
+    assert grounding.validate(ok, p) == []
+    bad = "Barangay 693 has 99,999 residents at risk."
+    assert grounding.validate(bad, p) == [99999.0]
+
+
 def test_template_brief_is_grounded_in_both_languages():
     p = grounding.build_payload(ROW, 1700)
     t = grounding.template_brief(p)

@@ -32,6 +32,9 @@ def extract_numbers(text: str) -> list[float]:
 
 def validate(text: str, payload: dict) -> list[float]:
     allowed = {float(v) for v in payload.values() if isinstance(v, (int, float))}
+    for v in payload.values():  # e.g. Manila's "Barangay 693" — its own name
+        if isinstance(v, str):
+            allowed.update(extract_numbers(v))
     return [n for n in extract_numbers(text)
             if not any(abs(n - a) <= 0.5 for a in allowed)]
 
