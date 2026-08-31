@@ -1,4 +1,4 @@
-# 🌊 BahaMap — Metro Manila Flood Exposure Atlas
+# BahaMap: Metro Manila Flood Exposure Atlas
 
 **Live app:** https://bahamap-ftq9fcw37j2maqlib3msmo.streamlit.app
 
@@ -36,21 +36,22 @@ flowchart LR
     I --> S[Streamlit app]
 ```
 
-Everything is precomputed offline by numbered pipeline scripts (`pipeline/01…07`);
-the Streamlit app reads only the small committed artifacts in `data/processed/` —
-no runtime geospatial computation, no runtime API calls. Pure functions live in
-importable modules with a pytest suite; `notebooks/qa.py` is the acceptance gate
-(it caught, among other things, that NOAH's 100-yr layer isn't strictly a
-superset of the 25-yr layer — see `docs/data-notes.md` for that story and the
-census pcode-vintage saga).
+Numbered pipeline scripts (`pipeline/01…07`) precompute everything offline; the
+Streamlit app reads only the small committed artifacts in `data/processed/`, so
+the app does no geospatial computation and makes no API calls at runtime. Pure
+functions live in importable modules with a pytest suite, and `notebooks/qa.py`
+is the acceptance gate. Among other things, it caught that NOAH's 100-yr layer
+isn't strictly a superset of the 25-yr layer; `docs/data-notes.md` tells that
+story, along with the census pcode-vintage saga.
 
-## The AI part, honestly
+## The AI part
 
-Briefs are generated per-barangay (claude-haiku-4-5, Batch API) from that
-barangay's computed numbers with a "use only these numbers" contract, then
-machine-validated: any number in the text that isn't in the input payload fails
-the brief, which is replaced by a deterministic template. Grounding pass rate on
-the current build: *pending first full generation run*.
+claude-haiku-4-5 (Batch API) writes each barangay's brief from that barangay's
+computed numbers under a "use only these numbers" contract. A validator then
+checks every number in the generated text against the input payload; if a
+number isn't in the payload, the brief fails and a deterministic template takes
+its place. Grounding pass rate on the current build: *pending first full
+generation run*.
 
 ## Run it yourself
 
@@ -81,9 +82,9 @@ implementations and hard QA gates between pipeline stages.
 | Barangay boundaries | PSA PSGC via [altcoder/philippines-psgc-shapefiles](https://github.com/altcoder/philippines-psgc-shapefiles) | public data |
 | Population (2020 census) | PSA via [OCHA/HDX](https://data.humdata.org) | CC-BY |
 | Schools & health facilities | © [OpenStreetMap](https://www.openstreetmap.org) contributors | ODbL |
-| Rainfall (ERA5, 1940–2025) | [Open-Meteo](https://open-meteo.com) archive | CC-BY-4.0 |
+| Rainfall (ERA5, 1940-2025) | [Open-Meteo](https://open-meteo.com) archive | CC-BY-4.0 |
 
-Code is MIT-licensed (see [LICENSE](LICENSE)). **Disclaimer:** educational
-project, not official hazard guidance — consult
-[UP NOAH](https://noah.up.edu.ph) and [PAGASA](https://bagong.pagasa.dost.gov.ph)
-for real decisions.
+Code is MIT-licensed (see [LICENSE](LICENSE)). **Disclaimer:** this is an
+educational project, not official hazard guidance. For real decisions, consult
+[UP NOAH](https://noah.up.edu.ph) and
+[PAGASA](https://bagong.pagasa.dost.gov.ph).

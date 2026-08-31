@@ -1,6 +1,6 @@
 # Who floods first? Flood exposure across Metro Manila's barangays
 
-*Marcus Chu — August 2026. Methods & caveats: see the app's Methodology page.*
+*Marcus Chu, August 2026. Methods & caveats: see the app's Methodology page.*
 
 ## Headlines
 
@@ -10,24 +10,24 @@
    25-yr Medium/High zones.
 3. **445 schools and 179 health facilities** (of 1,852 and 782 OSM-mapped)
    stand inside those zones.
-4. Exposure is concentrated: the top **100 barangays (5.8%** of NCR's 1,710**)**
+4. Exposure is concentrated: the top **100 barangays** (5.8% of NCR's 1,710)
    account for **46.5%** of all exposed residents.
 5. Days of ≥50mm rainfall **did not significantly change** since 1940
-   (slope +0.06 days/decade, p=0.55); only the rarest extremes — days ≥100mm —
+   (slope +0.06 days/decade, p=0.55); only the rarest extremes, days ≥100mm,
    show a marginal increase (+0.07/decade, p=0.047).
 
 ## The map in one paragraph
 
 The flood belt follows the water. The Marikina River valley and the Manggahan
-Floodway dominate the top of the ranking — Rosario, Manggahan, and Maybunga in
-Pasig, Malanday and Santo Niño in Marikina are the five most exposed barangays
-in the metro. From there the belt runs down the Pasig River corridor through
-the City of Manila's dense old districts, and across the low-lying KAMANAVA
-coastal plain (Caloocan–Malabon–Navotas–Valenzuela) drained by the Tullahan
-River. By share of population exposed, Marikina leads the seventeen LGUs at
-**61.8%**, followed by Manila (48.9%), Malabon (47.8%), and Pasig (47.0%);
-upland Muntinlupa (13.1%) and Caloocan's northern uplands (15.4%) anchor the
-other end.
+Floodway dominate the top of the ranking: Rosario, Manggahan, and Maybunga in
+Pasig, with Malanday and Santo Niño in Marikina, are the five most exposed
+barangays in the metro. From there the belt runs down the Pasig River corridor
+through the City of Manila's dense old districts, and across the low-lying
+KAMANAVA coastal plain (Caloocan-Malabon-Navotas-Valenzuela) drained by the
+Tullahan River. By share of population exposed, Marikina leads the seventeen
+LGUs at **61.8%**, followed by Manila (48.9%), Malabon (47.8%), and Pasig
+(47.0%); upland Muntinlupa (13.1%) and Caloocan's northern uplands (15.4%)
+anchor the other end.
 
 ## City league table
 
@@ -61,5 +61,5 @@ is partial. Return periods are treated as nested scenarios (each layer unioned
 with shorter ones) because the source model runs are not perfectly nested on
 their own. The 2020 census predates the Makati→Taguig EMBO transfer; those ten
 barangays are shown under Taguig. This is an educational analysis, not
-official hazard guidance — consult [UP NOAH](https://noah.up.edu.ph) and
+official hazard guidance; consult [UP NOAH](https://noah.up.edu.ph) and
 [PAGASA](https://bagong.pagasa.dost.gov.ph).
