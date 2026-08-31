@@ -1,6 +1,6 @@
 # 🌊 BahaMap — Metro Manila Flood Exposure Atlas
 
-**Live app:** deploying to Streamlit Community Cloud — link lands here shortly.
+**Live app:** https://bahamap-ftq9fcw37j2maqlib3msmo.streamlit.app
 
 Who in Metro Manila lives in harm's way when the floods come? BahaMap scores all
 **1,710 NCR barangays** by flood exposure and explains each one in plain English
