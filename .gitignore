@@ -2,6 +2,8 @@
 __pycache__/
 *.pyc
 data/raw/
+data/processed/hazard_mh_*.parquet
+notebooks/out/
 .pytest_cache/
 .streamlit/secrets.toml
 .env
