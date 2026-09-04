@@ -13,8 +13,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from pipeline import scoring
-from pipeline.paths import (CRS_METRIC, CRS_WGS, HEADLINE_RP, PROCESSED, RAW,
-                            RETURN_PERIODS, WEIGHTS)
+from pipeline.paths import CRS_METRIC, CRS_WGS, HEADLINE_RP, PROCESSED, RAW, RETURN_PERIODS, WEIGHTS
 
 GEOJSON_LIMIT_MB = 15
 SIMPLIFY_START_M = 10

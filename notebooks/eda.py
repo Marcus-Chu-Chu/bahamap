@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # repo root import
 import pandas as pd
 import plotly.express as px
 
-from pipeline.paths import PROCESSED, HEADLINE_RP  # noqa: E402
+from pipeline.paths import HEADLINE_RP, PROCESSED  # noqa: E402
 
 OUT = Path(__file__).parent / "out"
 OUT.mkdir(exist_ok=True)

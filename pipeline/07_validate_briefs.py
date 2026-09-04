@@ -1,7 +1,7 @@
 """Validate raw briefs; regenerate-or-template failures; write final briefs.json."""
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pandas as pd
 
@@ -30,7 +30,7 @@ def main() -> None:
             t = template_brief(p)
             final[p["pcode"]] = {"en": t["en"], "tl": t["tl"], "source": "template",
                                  "model": None,
-                                 "generated_at": datetime.now(timezone.utc).isoformat()}
+                                 "generated_at": datetime.now(UTC).isoformat()}
             if entry:
                 print(f"FAIL {p['pcode']} {row['name']}: ungrounded numbers {bad}")
     (PROCESSED / "briefs.json").write_text(

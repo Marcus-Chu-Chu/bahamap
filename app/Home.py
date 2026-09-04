@@ -1,6 +1,5 @@
 import plotly.express as px
 import streamlit as st
-
 from data_io import load_briefs, load_geojson, load_master
 
 st.set_page_config(page_title="BahaMap", page_icon="🌊", layout="wide")

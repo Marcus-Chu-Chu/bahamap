@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # repo root import
 import geopandas as gpd
 import pandas as pd
 
-from pipeline.paths import PROCESSED, POP_NCR_2020, RETURN_PERIODS  # noqa: E402
+from pipeline.paths import POP_NCR_2020, PROCESSED, RETURN_PERIODS  # noqa: E402
 
 failures = []
 

@@ -1,7 +1,5 @@
-import pandas as pd
 import plotly.express as px
 import streamlit as st
-
 from data_io import load_master, load_rainfall
 
 st.set_page_config(page_title="BahaMap · Insights", page_icon="🌊", layout="wide")

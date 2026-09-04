@@ -8,7 +8,7 @@ import json
 import os
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pandas as pd
 from anthropic import Anthropic
@@ -101,7 +101,7 @@ def main() -> None:
             parsed = json.loads(text)
             out[res.custom_id] = {"en": parsed["en"], "tl": parsed["tl"],
                                   "source": "claude", "model": MODEL,
-                                  "generated_at": datetime.now(timezone.utc).isoformat()}
+                                  "generated_at": datetime.now(UTC).isoformat()}
         except (json.JSONDecodeError, KeyError):
             print(f"  {res.custom_id}: unparseable output")
     (RAW / "briefs_raw.json").write_text(json.dumps(out, ensure_ascii=False, indent=1),

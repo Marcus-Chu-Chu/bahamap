@@ -18,7 +18,7 @@ if __package__ in (None, ""):
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from pipeline.paths import RAW, RAIN_POINTS
+from pipeline.paths import RAIN_POINTS, RAW
 from pipeline.sources import is_mm_flood
 
 UA = {"User-Agent": "BahaMap/0.1 (student project; gilmlachu@gmail.com)"}

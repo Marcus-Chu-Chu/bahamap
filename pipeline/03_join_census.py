@@ -11,11 +11,23 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from pipeline import joins
-from pipeline.paths import (BGY_FILE, BGY_LEVEL_COL, BGY_LEVEL_KEEP,
-                            BGY_NAME_COL, BGY_PCODE_COL, BGY_RAW_PSGC_COL,
-                            CENSUS_CITY_COL, CENSUS_PCODE_COL, CENSUS_POP_COL,
-                            CRS_METRIC, EMBO_CITY, PCODE_FIXES, POP_NCR_2020,
-                            PROCESSED, RAW)
+from pipeline.paths import (
+    BGY_FILE,
+    BGY_LEVEL_COL,
+    BGY_LEVEL_KEEP,
+    BGY_NAME_COL,
+    BGY_PCODE_COL,
+    BGY_RAW_PSGC_COL,
+    CENSUS_CITY_COL,
+    CENSUS_PCODE_COL,
+    CENSUS_POP_COL,
+    CRS_METRIC,
+    EMBO_CITY,
+    PCODE_FIXES,
+    POP_NCR_2020,
+    PROCESSED,
+    RAW,
+)
 
 
 def main() -> None:

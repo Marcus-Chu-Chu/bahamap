@@ -1,6 +1,5 @@
 import pandas as pd
 import streamlit as st
-
 from data_io import PROCESSED
 
 st.set_page_config(page_title="BahaMap · Methodology", page_icon="🌊")
