@@ -1,5 +1,7 @@
 # BahaMap: Metro Manila Flood Exposure Atlas
 
+[![CI](https://github.com/Marcus-Chu-Chu/bahamap/actions/workflows/ci.yml/badge.svg)](https://github.com/Marcus-Chu-Chu/bahamap/actions/workflows/ci.yml)
+
 **Live app:** https://bahamap-ftq9fcw37j2maqlib3msmo.streamlit.app
 
 Who in Metro Manila lives in harm's way when the floods come? BahaMap scores all
@@ -54,26 +56,44 @@ its place. Grounding pass rate on the current build: **100%** (1,710/1,710
 briefs; the smoke tests caught and rejected real number slips along the way,
 so the guardrail is load-bearing, not decorative).
 
-## Run it yourself
+## Quick start
+
+The app runs entirely off the small committed artifacts in `data/processed/`,
+so no data download is needed:
 
 ```bash
+git clone https://github.com/Marcus-Chu-Chu/bahamap.git
+cd bahamap
 python -m venv .venv
-.venv/Scripts/python -m pip install -r requirements.txt   # Windows paths; use bin/ on unix
-.venv/Scripts/python pipeline/01_download.py              # fetches all five raw sources
-.venv/Scripts/python pipeline/02_normalize_hazards.py
-.venv/Scripts/python pipeline/03_join_census.py
-.venv/Scripts/python pipeline/04_overlay_exposure.py
-.venv/Scripts/python pipeline/05_rainfall.py
-.venv/Scripts/python notebooks/qa.py                      # acceptance checks
-.venv/Scripts/python -m streamlit run app/Home.py
-# optional, needs an Anthropic API key in .env (see .env.example):
-.venv/Scripts/python pipeline/06_generate_briefs.py --limit 5
-.venv/Scripts/python pipeline/07_validate_briefs.py
+source .venv/bin/activate       # macOS/Linux
+.venv\Scripts\activate          # Windows
+pip install -r requirements.txt
+streamlit run app/Home.py
 ```
 
-Built with [Claude Code](https://claude.com/claude-code) driving an approved
-spec and 17-task plan (`docs/superpowers/`), with tests written before
-implementations and hard QA gates between pipeline stages.
+Exact known-good versions are in `requirements.lock`.
+
+## Rebuilding the data from source (optional)
+
+You do not need this to run the app. The numbered pipeline scripts rebuild
+every artifact in `data/processed/` from the raw sources — including a ~382MB
+barangay-boundary download and the NOAH hazard shapefiles:
+
+```bash
+python pipeline/01_download.py         # fetches all five raw sources
+python pipeline/02_normalize_hazards.py
+python pipeline/03_join_census.py
+python pipeline/04_overlay_exposure.py
+python pipeline/05_rainfall.py
+python notebooks/qa.py                 # acceptance checks
+# optional, needs an Anthropic API key in .env (see .env.example):
+python pipeline/06_generate_briefs.py --limit 5
+python pipeline/07_validate_briefs.py
+```
+
+Development was AI-assisted ([Claude Code](https://claude.com/claude-code));
+all data decisions, validation gates, and published numbers were reviewed and
+are reproducible from the pipeline in this repo.
 
 ## Data & credits
 
